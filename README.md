@@ -1,6 +1,8 @@
 # manifold-net-dmri
 [ManifoldNet Paper](https://www.cise.ufl.edu/~vemuri/paperphp/article.php?y=2019&i=2) Implementation for Diffusion MRI (dMRI)
 
+Chakraborty R., Bouza J., Manton J., Vemuri B.C. (2019) A Deep Neural Network for Manifold-Valued Data with Applications to Neuroimaging. In: Chung A., Gee J., Yushkevich P., Bao S. (eds) Information Processing in Medical Imaging. IPMI 2019. Lecture Notes in Computer Science, vol 11492. Springer, Cham
+
 ## Dependencies
 - Pytorch 1.1
 - [torch-batch-svd](https://github.com/KinglittleQ/torch-batch-svd)
