@@ -9,11 +9,8 @@ Chakraborty R., Bouza J., Manton J., Vemuri B.C. (2019) A Deep Neural Network fo
 
 ## Dependencies
 - Pytorch 1.1
-- [torch-batch-svd](https://github.com/KinglittleQ/torch-batch-svd)
-
-By default, ```batch_svd.py``` is expected to be put in the same directory as the source code.
 
 ## Quickstart
 We are not currently including our in-house dataset. For this reason you will need to include your own DTI (Diffusion Tensor Image) dataset and modify the dataloader defined in ```model.py``` accordingly. 
 
-Once the data is ready, simply run ```train.py```.
+Once the data is ready, simply run ```train.py```. Included under `data/example.npy` is an example dataset with 4 synthetically generated SPD-valued images. By default, running `train.py` will overfit a model to these samples, you will see training loss approaching 0. 
