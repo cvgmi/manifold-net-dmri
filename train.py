@@ -2,17 +2,17 @@ import torch
 import torch.optim as optim
 from torch.utils import data
 import torch.nn as nn
-from tensorboardX import SummaryWriter
+from torch.utils.tensorboard import SummaryWriter
 
 import time
 
-from model import ManifoldNetSPD, ParkinsonsDataset
+from model import ManifoldNetSPD, SampleDataset
 
 def count_parameters(model):
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
 
 
-training_params = {'batch_size': 16,
+training_params = {'batch_size': 2,
           'shuffle': True,
           'num_workers': 0}
 
@@ -21,21 +21,21 @@ validation_params = {'batch_size': 71,
         'num_workers': 0}
 
 max_epochs = 150
-validate = True
+validate = False
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 manifold_net_con = ManifoldNetSPD().to(device)
 print('Parameters:')
 print(count_parameters(manifold_net_con))
-dataset = ParkinsonsDataset('./data/all_data.npy')
-training, validation = data.random_split(dataset, [dataset.__len__()-71,71])
+dataset = SampleDataset('./data/example.npy')
+training, validation = data.random_split(dataset, [2, 2])
 
 training_generator = data.DataLoader(training, **training_params)
 validation_generator = data.DataLoader(validation, **validation_params)
 
-optimizer_con = optim.Adam(manifold_net_con.parameters(), lr=0.0005)
-criterion = nn.CrossEntropyLoss().cuda()
+optimizer_con = optim.Adam(manifold_net_con.parameters(), lr=0.00005)
+criterion = nn.CrossEntropyLoss().to(device)
 
 def classification(out,desired):
     _, predicted = torch.max(out, 1)
@@ -61,7 +61,6 @@ with open("data_backup", "w") as f:
                 start = time.time()
                 optimizer_con.zero_grad()
                 out = manifold_net_con(sample)
-                print(out)
                 print(label)
                 loss = criterion(out,label)
                 loss.backward()

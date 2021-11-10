@@ -6,7 +6,6 @@ import torch.nn.functional as F
 from torch.utils import data
 import spd
 
-from batch_svd import batch_svd
 
 class ManifoldNetSPD(nn.Module):
     def __init__(self):
@@ -36,7 +35,7 @@ class ManifoldNetSPD(nn.Module):
 
         return x
 
-class ParkinsonsDataset(data.Dataset):
+class SampleDataset(data.Dataset):
   def __init__(self, data_tensorf):
         'Initialization'
         self.all_data = np.load(data_tensorf)
@@ -58,14 +57,5 @@ class ParkinsonsDataset(data.Dataset):
 
         sample_processed = torch.stack(samples)
         sample_processed = sample_processed.reshape(1,26,10,3,3)
-
-        label = None
-
-        #356
-        if index < 356:
-            label = 1
-        else:
-            label = 0
-
-        return sample_processed, label
+        return sample_processed, 0 if index < 2 else 1
 

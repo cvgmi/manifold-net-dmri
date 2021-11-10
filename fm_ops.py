@@ -2,7 +2,6 @@ import torch
 import numpy as np
 import torch.nn as nn
 import torch.nn.functional as F
-from batch_svd import batch_svd
 
 def weightnormalize(weights):
     out = []
@@ -12,7 +11,7 @@ def weightnormalize(weights):
 
 
 def mexp(x, exp):
-    u,s,v = batch_svd(x)
+    u,s,v = torch.svd(x)
     ep = torch.diag_embed(torch.pow(s,exp))
     v = torch.einsum('...ij->...ji', v)
     return torch.matmul(torch.matmul(u,ep),v)
@@ -26,7 +25,7 @@ def batchGLMean(M,N,w):
     # w:[-1, 3, 3]
     w = w.unsqueeze(1).repeat(1,M.shape[-1])
 
-    u,s,v = batch_svd(M)
+    u,s,v = torch.svd(M)
     s_pow = torch.diag_embed(torch.pow(s,0.5))
     
     M_sqrt = torch.matmul(u, torch.matmul(s_pow, v.permute(0,2,1)))
@@ -36,7 +35,7 @@ def batchGLMean(M,N,w):
     inner_term = torch.matmul(M_sqrt_inv, torch.matmul(N, M_sqrt_inv))
 
     
-    u_i, s_i, v_i = batch_svd(inner_term)
+    u_i, s_i, v_i = torch.svd(inner_term)
 
 
     s_i_c = s_i.view(-1)

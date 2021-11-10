@@ -5,7 +5,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 import fm_ops as spd_ops
-from batch_svd import batch_svd
 
 
 def weightNormalize(weights):
@@ -62,7 +61,8 @@ class SPDConv2D(nn.Module):
 class SPDLinear(nn.Module):
     def __init__(self):
         super(SPDLinear, self).__init__()
-        self.A = torch.rand(2,288).cuda()
+        self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+        self.A = torch.rand(2,288).to(self.device)
 
     #X: [-1, 3,3]
     #Y: [-1, 3,3]
@@ -70,7 +70,7 @@ class SPDLinear(nn.Module):
         inner = torch.matmul(torch.inverse(X), Y)
 
 
-        u,s,v = batch_svd(inner)
+        u,s,v = torch.svd(inner)
         s_log = torch.diag_embed(torch.log(s))
         log_term = torch.matmul(u,torch.matmul(s_log,v.permute(0,2,1)))
         dist = torch.sum(torch.diagonal(torch.matmul(log_term,log_term), dim1=-2, dim2=-1),1)
@@ -88,7 +88,7 @@ class SPDLinear(nn.Module):
 
 
         #weights: [1,rows*cols-1]
-        weights = (1.0/torch.arange(start=2.0,end=x.shape[3]+1)).unsqueeze(0).cuda()
+        weights = (1.0/torch.arange(start=2.0,end=x.shape[3]+1)).unsqueeze(0).to(self.device)
         
         #unweightedFM: [batches*channels, 1,1,1, 3,3]
         unweighted_FM = spd_ops.recursiveFM2D(x,weights)
